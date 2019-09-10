@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "mocha": "^6.2.0",
+    "should": "^13.2.3"
+  },
+  "dependencies": {
+    "chromedriver": "^76.0.0",
+    "selenium-webdriver": "^4.0.0-alpha.4",
+    "uuid": "^3.3.3"
+  },
+  "scripts": {
+    "test": "mocha --recursive --timeout 100000 test.js"
+  }
+}
