@@ -136,7 +136,7 @@ describe('EDCM', function () {
 
 
         console.log("Logging before done...")
-        driver = await new Builder().forBrowser('chrome').build();
+        driver = await new Builder().forBrowser('firefox').build();
         await driver.get(baseUrl);
         driver.manage().setTimeouts({implicit:5000});
         console.log("Logging after done...")
