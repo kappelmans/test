@@ -1,19 +1,21 @@
 // Import requirement packages
 
 //require('chromedriver');
-var should = require('should');
 
 const uuidv1 = require('uuid/v1');
 const waitPeriod = 2500;
+
+const should = require('should');
 
 //const baseUrl = "https://edcm-migrate-ui.theglue.com/edcm/index.html#";
 const baseUrl = "https://edcm-dev-ui.theglue.com/edcm/index.html#";
 //const baseUrl = "https://dot-capital-dev-ui.theglue.com/edcm/index.html#";
 
-const assert = require('assert');
-const {Builder, Key, By, until} = require('selenium-webdriver');
+var assert = require('assert');
 
-const webdriver = require('selenium-webdriver');
+const {Builder, Key, By} = require('selenium-webdriver');
+const chrome = require('selenium-webdriver/chrome');
+const safari = require('selenium-webdriver/safari');
 
 const {login} = require('./test_modules/login')
 const {createUser} = require('./test_modules/user')
@@ -122,6 +124,8 @@ async function createLegalEntity(driver){
     await searchForm.findElement(By.css("button")).click();
 
     //find the table
+
+
     var table = await driver.findElement(By.css("tbody"));
     var tableLines = await table.findElements(By.css("tr"));
 
@@ -135,8 +139,23 @@ describe('EDCM', function () {
     before(async function() {
 
 
+        var screen = {
+            width: 1240,
+            height: 1200
+          }
+
         console.log("Logging before done...")
-        driver = await new Builder().forBrowser('firefox').build();
+
+//        driver = await new Builder().forBrowser('safari').build();
+
+/*        driver = await new Builder().forBrowser('chrome').build();
+        driver.manage().window().setRect(screen);
+*/
+
+        //await new Builder().forBrowser('safari').build().then(drv => driver = drv);
+        
+        driver = await new Builder().forBrowser('chrome').setChromeOptions(new chrome.Options().headless().windowSize(screen)).build();
+
         await driver.get(baseUrl);
         driver.manage().setTimeouts({implicit:5000});
         console.log("Logging after done...")
