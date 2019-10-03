@@ -6,8 +6,8 @@ const uuidv1 = require('uuid/v1');
 var waitPeriod = 1000;
 
 const should = require('should');
-//var baseUrl = "https://dot-capital-dev-ui.theglue.com/edcm/index.html#"; //Huidige dev omgeving 1.5 Azure
-var baseUrl = "https://edcm-dev-ui.theglue.com/edcm/index.html#";  //??? AWS
+var baseUrl = "https://dot-capital-dev-ui.theglue.com/edcm/index.html#"; //Huidige dev omgeving 1.5 Azure
+//var baseUrl = "https://edcm-dev-ui.theglue.com/edcm/index.html#";  //??? AWS
 ////var baseUrl = "https://edcm-migrate-ui.theglue.com/edcm/index.html#"; //To test from prior prod version to new prod version AWS
 
 
