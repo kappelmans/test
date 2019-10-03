@@ -1,0 +1,26 @@
+version: "3"
+services:
+  selenium-hub-chrome-debug:
+    image: selenium/standalone-chrome-debug
+    container_name: selenium-hub-chrome-debug
+    ports:
+      - "4444:4444"
+      - "49338:5900"
+  selenium-hub-chrome:
+    image: selenium/standalone-chrome
+    container_name: selenium-hub-chrome
+    ports:
+      - "4445:4444"
+  selenium-test-module1:
+    image: my-nodejs-app
+    container_name: edcm-test-app
+    depends_on:
+      - selenium-hub-chrome
+    environment:
+      - SELENIUM_REMOTE_URL=http://selenium-hub-chrome-debug:4444/wd/hub
+      - TEST_BASE_URL2=https://dot-capital-dev-ui.theglue.com/edcm/index.html#
+      - TEST_BASE_URL=https://edcm-dev-ui.theglue.com/edcm/index.html#
+      - TEST_BASE_URL1=https://edcm-migrate-ui.theglue.com/edcm/index.html#
+      - TEST_HEADLESS=false
+      - TEST_WAIT_PERIOD=350
+      - TEST_WAIT_START_TIME=5000

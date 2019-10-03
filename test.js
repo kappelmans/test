@@ -3,13 +3,13 @@
 //require('chromedriver');
 
 const uuidv1 = require('uuid/v1');
-const waitPeriod = 2500;
+var waitPeriod = 1000;
 
 const should = require('should');
+//var baseUrl = "https://dot-capital-dev-ui.theglue.com/edcm/index.html#"; //Huidige dev omgeving 1.5 Azure
+var baseUrl = "https://edcm-dev-ui.theglue.com/edcm/index.html#";  //??? AWS
+////var baseUrl = "https://edcm-migrate-ui.theglue.com/edcm/index.html#"; //To test from prior prod version to new prod version AWS
 
-//const baseUrl = "https://edcm-migrate-ui.theglue.com/edcm/index.html#";
-const baseUrl = "https://edcm-dev-ui.theglue.com/edcm/index.html#";
-//const baseUrl = "https://dot-capital-dev-ui.theglue.com/edcm/index.html#";
 
 var assert = require('assert');
 
@@ -20,7 +20,7 @@ const safari = require('selenium-webdriver/safari');
 const {login} = require('./test_modules/login')
 const {createUser} = require('./test_modules/user')
 const {createOffer} = require('./test_modules/offer')
-
+const {createLegalEntity} = require('./test_modules/moralcustomer')
 
 async function openManageLegalEntities(driver){
     var test = await driver.findElement(By.xpath("//a/span[text()='Legal entities']"));
@@ -33,105 +33,8 @@ async function openManageLegalEntities(driver){
 
 }
 
-async function createLegalEntity(driver){
-    let uuid = uuidv1();
-    await driver.findElement(By.xpath("//a/span[text()='Legal entities']"));
-    await driver.get( baseUrl + "manage/moralcustomers/create");
-
-    await driver.sleep(waitPeriod);
-
-    await driver.get( baseUrl + "manage/moralcustomers/create");
-    await driver.sleep(waitPeriod);
-
-    await driver.executeScript("document.body.style.zoom='100%'");
-    
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.name' ]")).sendKeys('Kris TEST1 N.V.');
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.officialName' ]")).sendKeys('Of Kris N.V.');
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.externalReference' ]")).sendKeys(uuid);
-    
-    await driver.findElement(By.xpath("//input[@type='checkbox' and @name='referentialData.investor' ]")).sendKeys(Key.SPACE);
-    await driver.findElement(By.xpath("//input[@type='checkbox' and @name='referentialData.withholdingTaxSubject' ]")).sendKeys(Key.SPACE);
-
-    await driver.findElement(By.xpath("//input[@type='checkbox' and @name='referentialData.issuer' ]")).sendKeys(Key.SPACE);
-
-    var blok = await driver.findElement(By.xpath("//div[div[@name='referentialData.moralCustomerStatus']]"));
-    blok.getId().then(function (cont){console.log('moralCustomerStatus id '+cont)})
-    await blok.findElement(By.className("Select-arrow")).click();
-    var option = await blok.findElement(By.xpath("//*[text()='Published']"))
-    await option.click();
-
-
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.leiCode' ]")).sendKeys('44444444444444444444');
-
-    blok = await driver.findElement(By.xpath("//div[div[@name='referentialData.language']]"));
-    blok.getId().then(function (cont){console.log('language id '+cont)})
-    await blok.findElement(By.className("Select-arrow-zone")).click();
-    option = await blok.findElement(By.xpath("//*[text()='Nederlands']"))
-    await option.click();
-
-    blok = await driver.findElement(By.xpath("//div[div[@name='referentialData.segmentation']]"));
-    blok.getId().then(function (cont){console.log('language id '+cont)})
-    await blok.findElement(By.className("Select-arrow-zone")).click();
-    option = await blok.findElement(By.xpath("//*[text()='Corporate']"))
-    await option.click();
-
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.naceCode' ]")).sendKeys('123456');
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.vatNumber' ]")).sendKeys('0474123123');
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.officialAddress.addressLine1' ]")).sendKeys('Street');
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.officialAddress.city' ]")).sendKeys('Brussels');
-    await driver.findElement(By.xpath("//input[@type='text' and @name='referentialData.officialAddress.postalCode' ]")).sendKeys('1080');
-
-    blok = await driver.findElement(By.xpath("//div[div[div[contains(@class,'referentialData.officialAddress.country')]]]"));
-    await blok.findElement(By.css("input")).sendKeys(Key.SPACE);
-    option = await blok.findElement(By.xpath("//*[text()='Belgium']"))
-
-    await option.click();
-
-
-    await driver.executeScript("document.documentElement.scrollTop = 0;")
-
-    await driver.findElement(By.xpath("//a[@href='#/manage/moralcustomers/mifidData']")).click();
-    blok = await driver.findElement(By.xpath("//div[div[div[div[text()='Select MiFID classification']]]]"));
-    await blok.findElement(By.xpath("//div[text()='Select MiFID classification']")).click();
-    option = await blok.findElement(By.xpath("//*[text()='Professional']"))
-    option.click();
-
-    
-
-    await driver.findElement(By.xpath("//a[@href='#/manage/moralcustomers/commercialData']")).click();
-
-    blok = await driver.findElement(By.xpath("//div[div[@name='commercialData.sectorList']]"));
-    blok.click();
-    await blok.findElement(By.xpath("//div[text()='Industrials']")).click();
-    
-
-    await driver.findElement(By.xpath("//input[@placeholder='Select countries']")).sendKeys('Belgium',Key.ENTER);
-
-    await driver.findElement(By.id("commercialData.regionList_EUROPE")).click();
-
-
-    await driver.findElement(By.xpath("//button[div[text()='Save']]")).click();
-
-    await driver.sleep(waitPeriod);
-
-    //await openManageLegalEntities(driver);
- 
-
-    //find newly created moral customer
-    var searchForm = await driver.findElement(By.xpath("//form[@name='moralCustomerOverviewSearch']"));
-    await searchForm.findElement(By.name('name')).sendKeys(uuid);
-    //await searchForm.findElement(By.name('name')).submit();
-    await searchForm.findElement(By.css("button")).click();
-
-    //find the table
-
-
-    var table = await driver.findElement(By.css("tbody"));
-    var tableLines = await table.findElements(By.css("tr"));
-
-    console.log('tableLines.length: ' + tableLines.length)
-
-    return tableLines    
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('EDCM', function () {
@@ -141,10 +44,27 @@ describe('EDCM', function () {
 
         var screen = {
             width: 1240,
-            height: 1200
+            height: 1000
           }
 
-        console.log("Logging before done...")
+        console.log("Logging before done..." + process.env.SELENIUM_REMOTE_URL)
+
+        if(process.env.TEST_WAIT_PERIOD){
+            console.log("TEST_WAIT_PERIOD" + process.env.TEST_WAIT_PERIOD);
+            waitPeriod = process.env.TEST_WAIT_PERIOD;
+        }
+        if(process.env.TEST_BASE_URL){
+            console.log("TEST_BASE_URL" + process.env.TEST_BASE_URL);
+            baseUrl = process.env.TEST_BASE_URL;
+        }
+
+        let headless = process.env.TEST_HEADLESS == 'true';
+        console.log("TEST_HEADLESS:" + process.env.TEST_HEADLESS);
+        console.log("TEST_HEADLESS " + headless);
+
+        await sleep(process.env.TEST_WAIT_START_TIME);
+        console.log("Sleep done...")
+
 
 //        driver = await new Builder().forBrowser('safari').build();
 
@@ -154,35 +74,50 @@ describe('EDCM', function () {
 
         //await new Builder().forBrowser('safari').build().then(drv => driver = drv);
         
-        driver = await new Builder().forBrowser('chrome').setChromeOptions(new chrome.Options().headless().windowSize(screen)).build();
+
+//        driver = await new Builder().forBrowser('chrome').setChromeOptions(new chrome.Options().headless().windowSize(screen)).build();
+//        driver = await new Builder().forBrowser('chrome').setChromeOptions(new chrome.Options()/*.headless()*/.windowSize(screen)).build();
+
+//        driver = await new Builder().forBrowser('chrome').build();    
+//        driver = await new Builder().usingServer('http://localhost:4444/wd/hub').forBrowser('chrome').setChromeOptions(new chrome.Options()/*.headless()*/.windowSize(screen)).build();    
+
+        
+
+        if(headless){
+            driver = await new Builder().forBrowser('chrome').setChromeOptions(new chrome.Options().headless().windowSize(screen)).build();    
+        }
+        else{
+            screen = {
+                width: 1240,
+                height: 1000
+              }
+
+            driver = await new Builder().forBrowser('chrome').setChromeOptions(new chrome.Options().windowSize(screen)).build();    
+        }
 
         await driver.get(baseUrl);
         driver.manage().setTimeouts({implicit:5000});
         console.log("Logging after done...")
-
-
     });
 
-    after(function() {
-        console.log("Logging after00...")
-        driver.sleep(9000).then(()=>driver && driver.close());
+    after(async function() {
+        console.log("Logging after ALL")
+        driver.sleep(1000).then(()=>driver && driver.close());
     });
 /*
-    describe('Log In - Log Out 1 ',function(){
-        before(async function(){            console.log("Login1...");
-        //await login(driver, 'bank-dealer2@theglue.com');
-
-        await login(driver, 'bank-dealer2@theglue.com',true);
-
+    describe('Log In(1) ',function(){
+        before(async function(){           
+            await login(driver, 'bank-dealer2@theglue.com',true);
+            await driver.sleep(waitPeriod*4);
         })
 
-        it('dummy', function(done) {
-            driver.sleep(1000).then(()=>done());
+        it('Log In(1)', function(done) {
+            driver.sleep(waitPeriod*4).then(()=>done());
         });
+
         after(async function(){
-            console.log("Logout1...");
-            await driver.sleep(1000);
             await driver.get( baseUrl + "logout")
+            await driver.sleep(waitPeriod);
         })
     });
 */
@@ -202,55 +137,96 @@ describe('EDCM', function () {
             await driver.get( baseUrl + "logout")
         })
     });*/
-
-    describe('Create offer',function(){
-        before(async function(){await login(driver, 'bank-dealer2@theglue.com', true);})
-        it('Create an offer', function(done) {
-            let uuid = uuidv1();
-            createOffer(driver, baseUrl, uuid)
-                .then(function(offerCreated) { 
-                    //offerCreated.should.have.lengthOf(1);
-                    driver.sleep(5000).then(()=>done());
-                } );
-        });
-        after(async function(){
-            console.log("Logging out1...");
-            await driver.get( baseUrl + "logout")
-        })
-    });
-   
-    describe('Log In - Log Out 2 ',function(){
-        before(async function(){            console.log("Login2...");
-        await login(driver, 'bank-dealer2@theglue.com');})
-        it('dummy', function(done) {
-            driver.sleep(1000).then(()=>done());
-        });
-        after(async function(){
-            console.log("Logout2...");
-            await driver.sleep(1000);
-            await driver.get( baseUrl + "logout")
-        })
-    });
-
+/*
     describe('Create moral customer',function(){
         before(async function(){await login(driver, 'platform-admin2@theglue.com')})
-        it('Login to EDCM', function(done) {
-            console.log("Logging test1 start...")
-
+        it('Creating moral customer(1)', function(done) {
+            let uuid = uuidv1();
             openManageLegalEntities(driver);
-            var entityCreated = createLegalEntity(driver)
+            createLegalEntity(driver, baseUrl, uuid)
                 .then(function(entityCreated) { 
                     entityCreated.should.have.lengthOf(1);
                     done(); 
                 } );
 
         });
+        it('Creating moral customer(2)', function(done) {
+            let uuid = uuidv1();
+            openManageLegalEntities(driver);
+            createLegalEntity(driver, baseUrl, uuid, waitPeriod)
+                .then(function(entityCreated) { 
+                    entityCreated.should.have.lengthOf(1);
+                    done(); 
+                } );
+
+        });        after(async function(){
+            await driver.get( baseUrl + "logout");
+            await driver.sleep(waitPeriod);
+        })
+    });
+*/
+
+    describe('Render views',function(){
+        before(async function(){await login(driver, 'bank-dealer2@theglue.com', true);await driver.sleep(waitPeriod*4);})
+
+        for (let i = 1; i <= 1; i++ ){
+            it('View ('+ i + ')', function(done) {
+                myFunction = async () => {
+                    await driver.sleep(waitPeriod);
+                    await driver.get( baseUrl + "manage/moralcustomers");           
+                    await driver.sleep(waitPeriod);
+                    await driver.get( baseUrl + "manage/issueprograms");           
+                    await driver.sleep(waitPeriod);
+                    await driver.get( baseUrl + "manage/offers");           
+                    await driver.sleep(waitPeriod);
+                };
+                myFunction().then(()=>done());
+
+            });    
+        }
+
         after(async function(){
-            console.log("Logging out2...");
-            //await driver.get( baseUrl + "logout")
+            await driver.get( baseUrl + "logout")
+            await driver.sleep(waitPeriod);
         })
     });
 
+
+    describe('Create offer',function(){
+        before(async function(){await login(driver, 'bank-dealer2@theglue.com');await driver.sleep(waitPeriod*4);})
+
+        for (let i = 1; i <= 200; i++ ){
+            it('Create automated offer ('+ i + ')', function(done) {
+                let uuid = uuidv1();
+                createOffer(driver, baseUrl, uuid, waitPeriod/2)
+                    .then(function(offerCreated) { 
+                        driver.sleep(waitPeriod).then(()=>done());
+                    } );
+            });    
+        }
+
+        after(async function(){
+            await driver.get( baseUrl + "logout")
+            await driver.sleep(waitPeriod);
+        })
+    });
+   /*
+    describe('Log In(2) ',function(){
+        before(async function(){           
+            await login(driver, 'bank-dealer2@theglue.com');
+        })
+
+        it('Log In(2)', function(done) {
+            driver.sleep(waitPeriod).then(()=>done());
+        });
+        after(async function(){
+            await driver.get( baseUrl + "logout")
+            await driver.sleep(waitPeriod);
+        })
+    });
+
+
+*/
 
 
 
